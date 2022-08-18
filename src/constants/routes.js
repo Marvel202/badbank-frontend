@@ -1,0 +1,9 @@
+export const CREATE_ACCOUNT = "/createaccount";
+export const LOG_IN = "/login";
+export const DEPOSIT = "/deposit";
+export const WITHDRAW = "/withdraw";
+export const BALANCE = "/balance";
+export const NOTAVAIL = "/*";
+export const HOME = "/home";
+export const PROFILE = "/profile/:id";
+export const LANDING = "/";
