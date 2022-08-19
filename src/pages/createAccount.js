@@ -3,10 +3,12 @@ import { Card } from "../components/Card";
 import { useForm } from "react-hook-form";
 import { createAccount } from "../firebaseapp/auth";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export const CreateAccount = () => {
   const [show, setShow] = useState(true);
   const [status, setStatus] = useState("");
+  const URL = "http://localhost:3003/account/create";
   return (
     <div>
       <Card

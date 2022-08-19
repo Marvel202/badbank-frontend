@@ -15,9 +15,6 @@ export const createAccount = async ({ username, email, password }) => {
   const resp = await createUserWithEmailAndPassword(auth, email, password);
   // const { user } = resp.user;
 
-  resp.user.getIdToken().then((token) => {
-    localStorage.setItem("token", token);
-  });
   updateProfile(auth.currentUser, {
     displayName: `${username}`,
   });
@@ -29,18 +26,15 @@ export const createAccount = async ({ username, email, password }) => {
 };
 export const logout = () => {
   signOut(auth);
+  console.log("from logout", auth);
   localStorage.removeItem("token");
-  console.log("after logout", localStorage.token);
+  // console.log("after logout", localStorage.token);
 };
 export const login = async ({ email, password }) => {
   const resp = await signInWithEmailAndPassword(auth, email, password);
-  console.log("++++", resp);
-  console.log("----", resp.user.localStorage);
 
-  resp.user.getIdToken().then((token) => {
-    localStorage.setItem("token", token);
-  });
-  console.log("%%%", resp.user.getIdToken());
+  console.log("++++", resp);
+
   console.log("after login", localStorage.token);
   return resp;
 };

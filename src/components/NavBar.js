@@ -4,7 +4,6 @@ import { getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../firebaseapp/auth";
 import { useSession } from "../firebaseapp/UserProvider";
-// import { UserContext } from "../contexts/userContext";
 
 export const NavBar = () => {
   const auth = getAuth();
@@ -13,7 +12,6 @@ export const NavBar = () => {
   const disable = user ? "nav-link disabled" : "nav-link";
   const removeDisable = user ? "nav-link" : "nav-link disabled";
   const navigate = useNavigate();
-  console.log("useUser", user);
 
   const handle = () => {
     logout();

@@ -1,25 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Card } from "../components/Card";
 import { useForm } from "react-hook-form";
+import { useSession, UserProvider } from "../firebaseapp/UserProvider";
 import axios from "axios";
 
-import { useSession } from "../firebaseapp/UserProvider";
-
 export const Deposit = (session) => {
-  console.log("###", session);
   const [show, setShow] = useState(true);
   const [status, setStatus] = useState("");
-
-  console.log("+++", session);
-  const dataRec = axios
-    .get("http://localhost:3003/account/john@email.com")
-    .then(function(response) {
-      console.log("hhh", response).catch(function(error) {
-        console.log("err", error);
-      });
-    });
-
-  console.log("zzzz", dataRec);
 
   return (
     !!session.user.user && (
@@ -61,13 +48,12 @@ const handleErr = (err) => {
 function DepositForm(props) {
   const [email, setEmail] = useState("");
   const [amount, setAmount] = useState("");
+  const ctx = useSession();
 
-  // const ctx = useContext(LedgerContext);
   // const userBalance = ctx.userBalance;
+  // console.log("...", userBalance);
   const [deposit, setDeposit] = useState(0);
-  const [balance, setBalance] = useState(0);
-
-  // console.log("ttt", ctx);
+  // const [balance, setBalance] = useState(0);
 
   const {
     register,
@@ -79,12 +65,21 @@ function DepositForm(props) {
   } = useForm();
 
   function onSubmit() {
-    let val = getValues().amount;
+    let val = getValues().depositamt;
     let email = getValues.email;
-    console.log(val);
-    let newTotal = Number(val) + balance;
-    // setBalance(newTotal);
-    // ctx.setUserBalance(newTotal);
+    console.log("!-!-!", ctx.userBalance);
+    console.log("val", val);
+    // console.log("from ctx", Number(userBalance));
+    let newTotal = Number(val) + ctx.userBalance;
+    console.log("vvv", newTotal);
+
+    try {
+      axios.get("http://localhost:3003/account/update/john@email.com", {
+        balance: val,
+      });
+    } catch (error) {
+      console.error(error);
+    }
 
     props.setStatus("");
     props.setShow(false);

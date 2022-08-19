@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Card } from "../components/Card";
 import { useForm } from "react-hook-form";
+import { useSession, UserProvider } from "../firebaseapp/UserProvider";
 
 export const Balance = (session) => {
   const [show, setShow] = useState(true);
   const [status, setStatus] = useState("");
-  console.log("bal page", session);
+
+  console.log("from balance", session);
+
   return (
     !!session.user.user && (
       <Card
@@ -16,7 +19,7 @@ export const Balance = (session) => {
           show ? (
             <BalanceForm setShow={setShow} setStatus={setStatus} />
           ) : (
-            <BalanceMsg setShow={setShow} />
+            <BalanceMsg setShow={setShow} setStatus={setStatus} />
           )
         }
       />
@@ -41,28 +44,32 @@ function BalanceMsg(props) {
 
 function BalanceForm(props) {
   const [email, setEmail] = useState("");
-  const [balance, setBalance] = useState("");
-  // const ctx = React.useContext(UserContext);
+
+  const ctx = useSession();
+  console.log("ctx from bal", ctx.user);
   const {
     register,
     handleSubmit,
+    getValues,
     reset,
     formState: { errors },
   } = useForm();
 
   function displayDetails(data) {
-    console.log("!data", data);
-
+    console.log("!!!", ctx.user.email);
     //   const user = ctx.users.find((user) => user.email == email);
-    //   if (!user) {
-    //     props.setStatus('fail!')
-    //     return;
+    let email = data.email;
+    if (ctx.user.email !== email) {
+      //   if (!user) {
+      props.setStatus("fail!");
+
+      return;
+    }
     //   }
 
-    //   setBalance(user.balance);
-    //   console.log(user);
+    // props.setStatus("please enter correct email")
+    props.setStatus(`Your balance is: $ ${ctx.userBalance}`);
 
-    // props.setStatus("Your balance is: " + props.user.balance);
     props.setShow(false);
   }
 
