@@ -45,15 +45,12 @@ function LoginForm(props) {
     reset,
     formState: { errors },
   } = useForm();
-  // const ctx = React.useContext(UserContext);
 
   const handleErr = (e) => {
     const errType = Object.keys(e);
-
     const required = Object.entries(e).filter(
       ([k, v], i) => v.type === "required"
     );
-
     let validitychecks = {
       password: "Hint: Your Password has at least 8 alphanumeric characters.",
     };
@@ -69,13 +66,13 @@ function LoginForm(props) {
 
     try {
       user = await login(data);
-      console.log("user", user);
       reset();
       setTimeout(() => {
         navigate("/");
       }, 2500);
     } catch (error) {
       console.log(error);
+      alert(error.message);
     }
     if (user) {
       props.setShow(false);

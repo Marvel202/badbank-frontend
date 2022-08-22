@@ -15,7 +15,6 @@ export const service = axios.create({
 export const ledgerAPI = {
   account: (data) => service.get(`/account/${data}`),
   accountCreate: (data) => service.post("/account/create", data),
-  login: (data) => service.get("/account/login", data),
   update: (data) => service.put(`account/update/${data}`, data),
 };
 
