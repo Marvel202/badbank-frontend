@@ -5,6 +5,8 @@ import { createAccount } from "../firebaseapp/auth";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { LedgerContext } from "../contexts/LedgerProvider";
+import "dotenv/config";
+import { ledgerAPI } from "../Ledger";
 
 export const CreateAccount = () => {
   const [show, setShow] = useState(true);
@@ -90,8 +92,7 @@ function CreateForm(props) {
         console.log("newUser", newUser);
         console.log("then", props);
 
-        // const url = "https://bad-bank-backend.herokuapp.com/account/create";
-        const url = "http:localhost:3003/account/create";
+        const url = "https://bad-bank-backend.herokuapp.com/account/create";
         let body = {
           username: data.username,
           email: data.email,
@@ -115,6 +116,7 @@ function CreateForm(props) {
           .catch((error) => {
             console.log(error);
           });
+
         reset();
         props.setShow(false);
         setTimeout(() => {

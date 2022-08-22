@@ -3,6 +3,8 @@ import { Card } from "../components/Card";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { LedgerContext } from "../contexts/LedgerProvider";
+import "dotenv/config";
+import { ledgerAPI } from "../Ledger";
 
 export const Deposit = (session) => {
   const [show, setShow] = useState(true);
@@ -80,9 +82,8 @@ function DepositForm(props) {
       props.setBalance(newTotal);
       console.log("vvv", newTotal);
 
-      // const url =
-      // `https://bad-bank-backend.herokuapp.com/account/update/` + params;
-      const url = `http://localhost:3003/account/update/` + props.authEmail;
+      const url = `https://bad-bank-backend.herokuapp.com/account/update/${props.authEmail}`;
+      console.log("url in deposit", url);
       let body = {
         balance: newTotal,
         $push: { deposits: [{ tran_date: Date.now(), amount: val }] },

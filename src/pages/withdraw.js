@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { useSession } from "../firebaseapp/AuthProvider";
 import axios from "axios";
 import { LedgerContext } from "../contexts/LedgerProvider";
+import "dotenv/config";
 
 export const Withdraw = (session) => {
   const [show, setShow] = useState(true);
@@ -87,14 +88,9 @@ function WithdrawForm(props) {
     props.setBalance(newTotal);
     console.log("xxx", newTotal);
 
-    const params = props.authEmail;
-    // const url =
-    // `https://bad-bank-backend.herokuapp.com/account/update/` + params;
-    const url = `http://localhost:3003/account/update/` + params;
+    const url = `https://bad-bank-backend.herokuapp.com/account/update/${props.authEmail}`;
+    console.log("url from withdraw");
 
-    // get previous transactions
-
-    // set current transaction
     let body = {
       balance: newTotal,
       $push: { withdrawal: [{ tran_date: Date.now(), amount: val }] },
