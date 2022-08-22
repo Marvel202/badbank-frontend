@@ -72,7 +72,6 @@ function WithdrawForm(props) {
     const prevBalance = props.balance;
 
     if (props.authEmail !== email) {
-      console.log("T/F", props.authEmail === email);
       props.setStatus("incorrect email!");
       reset();
       return;
@@ -87,7 +86,8 @@ function WithdrawForm(props) {
     let newTotal = Number(prevBalance) - Number(val);
     props.setBalance(newTotal);
 
-    const url = `https://bad-bank-backend.herokuapp.com/account/update/${props.authEmail}`;
+    const url =
+      process.env.REACT_APP_API_URL + `account/update/${props.authEmail}`;
 
     let body = {
       balance: newTotal,
