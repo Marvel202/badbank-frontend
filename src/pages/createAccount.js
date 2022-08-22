@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Card } from "../components/Card";
 import { useForm } from "react-hook-form";
 import { createAccount } from "../firebaseapp/auth";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { LedgerContext } from "../contexts/LedgerProvider";
 
 export const CreateAccount = () => {
   const [show, setShow] = useState(true);
   const [status, setStatus] = useState("");
-  const URL = "http://localhost:3003/account/create";
+
+  const { balance, setBalance } = useContext(LedgerContext);
+
   return (
     <div>
       <Card
@@ -17,7 +20,7 @@ export const CreateAccount = () => {
         status={status}
         body={
           show ? (
-            <CreateForm setShow={setShow} />
+            <CreateForm setShow={setShow} setBalance={setBalance} />
           ) : (
             <CreateMsg setShow={setShow} />
           )
@@ -45,9 +48,7 @@ function CreateForm(props) {
     register,
     handleSubmit,
     reset,
-
     formState: { errors },
-    setError,
   } = useForm({
     defaultValues: {
       username: "",
@@ -61,7 +62,6 @@ function CreateForm(props) {
 
   const handleErr = (e) => {
     const errType = Object.keys(e);
-
     const required = Object.entries(e).filter(
       ([k, v], i) => v.type === "required"
     );
@@ -83,22 +83,50 @@ function CreateForm(props) {
 
     let newUser;
     // setLoading(true);
-
     try {
       newUser = await createAccount(data);
-      console.log("newUser", newUser);
-      console.log("then", props);
+      console.log("new user", newUser);
+      if (newUser) {
+        console.log("newUser", newUser);
+        console.log("then", props);
+
+        const url = "https://bad-bank-backend.herokuapp.com/account/create";
+        let body = {
+          username: data.username,
+          email: data.email,
+          firebaseId: "",
+          balance: 0,
+        };
+        var authOptions = {
+          method: "post",
+          url: url,
+          data: body,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          json: true,
+        };
+
+        axios(authOptions)
+          .then((resp) => {
+            console.log("response: ", resp);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        reset();
+        props.setShow(false);
+        setTimeout(() => {
+          navigate("/");
+        }, 3000);
+        props.setBalance(0);
+      } else if (!newUser) {
+        // setLoading(false);
+        console.log("network problem");
+      }
+    } catch (error) {
+      alert("email already in use", error.message);
       reset();
-    } catch (error) {}
-    if (newUser) {
-      props.setShow(false);
-      setTimeout(() => {
-        navigate("/");
-      }, 3000);
-      //;
-    } else {
-      // setLoading(false);
-      alert("email already in use");
     }
   };
 

@@ -12,7 +12,6 @@ const service = axios.create({
 });
 
 const ledgerAPI = {
-  balance: (data) => service.get(`/account/${data.email}`, data),
   account: (data) =>
     axios.get(`http://localhost:3003/account/${data.email}`, data),
   accountCreate: (data) => service.post("/account/create", data),

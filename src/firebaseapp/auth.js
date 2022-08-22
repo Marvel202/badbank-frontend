@@ -5,17 +5,15 @@ import {
   signOut,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { Link, useNavigate } from "react-router-dom";
-
-import { UserProvider, useSession } from "./UserProvider";
 
 const auth = getAuth();
-
 export const createAccount = async ({ username, email, password }) => {
   const resp = await createUserWithEmailAndPassword(auth, email, password);
   // const { user } = resp.user;
 
-  updateProfile(auth.currentUser, {
+  console.log("from firebase", username);
+  console.log("useSession().");
+  await updateProfile(auth.currentUser, {
     displayName: `${username}`,
   });
 

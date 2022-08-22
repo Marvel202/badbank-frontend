@@ -1,22 +1,32 @@
 import React, { useState, useContext } from "react";
 import { Card } from "../components/Card";
 import { useForm } from "react-hook-form";
-import { useSession, UserProvider } from "../firebaseapp/UserProvider";
 import axios from "axios";
+import { LedgerContext } from "../contexts/LedgerProvider";
 
 export const Deposit = (session) => {
   const [show, setShow] = useState(true);
   const [status, setStatus] = useState("");
+  console.log("from deposit", session.user.session);
+  const { loading, email, firebaseId, user } = session.user.session;
+  const authEmail = email;
+  const { balance, setBalance } = useContext(LedgerContext);
 
   return (
-    !!session.user.user && (
+    !!user && (
       <Card
         bgcolor="warning"
         header="Deposit"
         status={status}
         body={
           show ? (
-            <DepositForm setShow={setShow} setStatus={setStatus} />
+            <DepositForm
+              setShow={setShow}
+              setStatus={setStatus}
+              balance={balance}
+              setBalance={setBalance}
+              authEmail={authEmail}
+            />
           ) : (
             <DepositMsg setShow={setShow} />
           )
@@ -41,50 +51,64 @@ function DepositMsg(props) {
   );
 }
 
-const handleErr = (err) => {
-  console.log(err);
-};
-
 function DepositForm(props) {
-  const [email, setEmail] = useState("");
-  const [amount, setAmount] = useState("");
-  const ctx = useSession();
-
-  // const userBalance = ctx.userBalance;
-  // console.log("...", userBalance);
-  const [deposit, setDeposit] = useState(0);
-  // const [balance, setBalance] = useState(0);
-
+  console.log("props inside deposit form", props);
   const {
     register,
     handleSubmit,
     getValues,
     reset,
     formState: { errors },
-    setError,
   } = useForm();
 
   function onSubmit() {
-    let val = getValues().depositamt;
-    let email = getValues.email;
-    console.log("!-!-!", ctx.userBalance);
+    let val = Number(getValues().depositamt);
+    let email = getValues().email;
+
+    console.log("inside submit", props);
     console.log("val", val);
-    // console.log("from ctx", Number(userBalance));
-    let newTotal = Number(val) + ctx.userBalance;
-    console.log("vvv", newTotal);
+    console.log("OnSubmit", props.balance);
 
-    try {
-      axios.get("http://localhost:3003/account/update/john@email.com", {
-        balance: val,
-      });
-    } catch (error) {
-      console.error(error);
+    if (props.authEmail !== email) {
+      console.log("T/F", props.authEmail === email);
+      props.setStatus("incorrect email!");
+      return;
+    } else {
+      const prevBalance = props.balance;
+      let newTotal = Number(val) + Number(prevBalance);
+      props.setBalance(newTotal);
+      console.log("vvv", newTotal);
+
+      // const url =
+      // `https://bad-bank-backend.herokuapp.com/account/update/` + params;
+      const url = `http://localhost:3003/account/update/` + props.authEmail;
+      let body = {
+        balance: newTotal,
+        deposits: { tran_date: new Date().toLocaleString(), amount: val },
+      };
+
+      var authOptions = {
+        method: "put",
+        url: url,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        json: true,
+      };
+
+      axios(authOptions)
+        .then((resp) => {
+          console.log("response: ", resp);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      props.setStatus("");
+      props.setShow(false);
     }
-
-    props.setStatus("");
-    props.setShow(false);
   }
-
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -92,11 +116,7 @@ function DepositForm(props) {
           <label>
             Email
             <br />
-            <input
-              type="email"
-              value={useSession().user ? useSession().user.email : ""}
-              {...register("email", { required: true })}
-            />
+            <input type="email" {...register("email", { required: true })} />
           </label>
           <br />
         </div>

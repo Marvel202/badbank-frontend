@@ -1,22 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Card } from "../components/Card";
 import { useForm } from "react-hook-form";
-import { getAuth } from "firebase/auth";
-import { useSession } from "../firebaseapp/UserProvider";
+import { useSession } from "../firebaseapp/AuthProvider";
+import axios from "axios";
+import { LedgerContext } from "../contexts/LedgerProvider";
 
 export const Withdraw = (session) => {
   const [show, setShow] = useState(true);
   const [status, setStatus] = useState("");
+  console.log("from withdraw", session.user.session);
+  const { loading, email, firebaseId, user } = session.user.session;
+  const { balance, setBalance } = useContext(LedgerContext);
+  const authEmail = email;
 
   return (
-    !!session.user.user && (
+    !!user && (
       <Card
         bgcolor="success"
         header="Withdraw"
         status={status}
         body={
           show ? (
-            <WithdrawForm setShow={setShow} setStatus={setStatus} />
+            <WithdrawForm
+              setShow={setShow}
+              setStatus={setStatus}
+              balance={balance}
+              setBalance={setBalance}
+              authEmail={authEmail}
+            />
           ) : (
             <WithdrawMsg setShow={setShow} />
           )
@@ -42,9 +53,8 @@ function WithdrawMsg(props) {
 }
 
 function WithdrawForm(props) {
-  const [email, setEmail] = useState("");
-  const [amount, setAmount] = useState("");
-  // const ctx = React.useContext(UserContext);
+  const ctx = useSession();
+
   const {
     register,
     handleSubmit,
@@ -55,15 +65,54 @@ function WithdrawForm(props) {
   } = useForm();
 
   function onSubmit() {
-    console.log(email, amount);
-    //   const user = ctx.users.find((user) => user.email == email);
-    //   if (!user) {
-    //     props.setStatus('fail!')
-    //     return;
-    //   }
+    let val = Number(getValues().withdrawAmt);
+    let email = getValues().email;
+    const prevBalance = props.balance;
 
-    //   user.balance = user.balance - Number(amount);
-    //   console.log(user);
+    if (props.authEmail !== email) {
+      console.log("T/F", props.authEmail === email);
+      props.setStatus("incorrect email!");
+      reset();
+      return;
+    }
+
+    if (val > prevBalance) {
+      alert("insufficient funds, withdrawal cannot be processed");
+      reset();
+      return;
+    }
+
+    let newTotal = Number(prevBalance) - Number(val);
+    props.setBalance(newTotal);
+    console.log("xxx", newTotal);
+
+    const params = props.authEmail;
+    // const url =
+    // `https://bad-bank-backend.herokuapp.com/account/update/` + params;
+    const url = `http://localhost:3003/account/update/` + params;
+    let body = {
+      balance: newTotal,
+      withdrawal: { tran_date: new Date().toLocaleString(), amount: val },
+    };
+
+    var authOptions = {
+      method: "put",
+      url: url,
+      data: body,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      json: true,
+    };
+
+    axios(authOptions)
+      .then((resp) => {
+        console.log("response: ", resp);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
     props.setStatus("");
     props.setShow(false);
   }
@@ -74,11 +123,7 @@ function WithdrawForm(props) {
         <label>
           Email
           <br />
-          <input
-            type="email"
-            value={useSession().user ? useSession().user.email : ""}
-            {...register("email", { required: true })}
-          />
+          <input type="email" {...register("email", { required: true })} />
         </label>
         <br />
       </div>
@@ -89,7 +134,7 @@ function WithdrawForm(props) {
         type="number"
         placeholder="Enter amount"
         min="0"
-        {...register("amount", {
+        {...register("withdrawAmt", {
           required: true,
           min: 0,
         })}

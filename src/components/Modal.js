@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 const ModalBackground = styled.div`
   position: absolute;
@@ -20,9 +21,11 @@ const ModalBody = styled.div`
 `;
 
 export const Modal = ({ children }) => {
+  const navigate = useNavigate();
   const [show, setShow] = useState(true);
   const handle = () => {
     setShow(false);
+    // navigate("/");
   };
   return (
     <>

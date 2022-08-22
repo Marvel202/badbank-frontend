@@ -7,7 +7,7 @@ import { Deposit } from "../pages/deposit";
 import { Withdraw } from "../pages/withdraw";
 import { Balance } from "../pages/balance";
 import * as Enroute from "../constants/routes";
-import { useSession } from "../firebaseapp/UserProvider";
+import { useSession } from "../firebaseapp/AuthProvider";
 import { NotAvail } from "../pages/NotAvail";
 import { getAuth } from "firebase/auth";
 

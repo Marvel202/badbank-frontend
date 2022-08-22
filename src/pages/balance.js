@@ -1,25 +1,39 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import { Card } from "../components/Card";
 import { useForm } from "react-hook-form";
-import { useSession, UserProvider } from "../firebaseapp/UserProvider";
+import axios from "axios";
+import { LedgerContext } from "../contexts/LedgerProvider";
 
 export const Balance = (session) => {
   const [show, setShow] = useState(true);
   const [status, setStatus] = useState("");
-
-  console.log("from balance", session);
+  console.log("from balance", session.user.session);
+  const { loading, email, firebaseId, user } = session.user.session;
+  console.log("email in withdraw", authEmail);
+  const { balance, setBalance } = useContext(LedgerContext);
+  const authEmail = email;
 
   return (
-    !!session.user.user && (
+    !!user && (
       <Card
         bgcolor="info"
         header="Balance"
         status={status}
         body={
           show ? (
-            <BalanceForm setShow={setShow} setStatus={setStatus} />
+            <BalanceForm
+              setShow={setShow}
+              setStatus={setStatus}
+              authEmail={authEmail}
+              balance={balance}
+            />
           ) : (
-            <BalanceMsg setShow={setShow} setStatus={setStatus} />
+            <BalanceMsg
+              setShow={setShow}
+              setStatus={setStatus}
+              authEmail={authEmail}
+              balance={balance}
+            />
           )
         }
       />
@@ -43,10 +57,8 @@ function BalanceMsg(props) {
 }
 
 function BalanceForm(props) {
-  const [email, setEmail] = useState("");
+  console.log("props inside form", props);
 
-  const ctx = useSession();
-  console.log("ctx from bal", ctx.user);
   const {
     register,
     handleSubmit,
@@ -56,20 +68,16 @@ function BalanceForm(props) {
   } = useForm();
 
   function displayDetails(data) {
-    console.log("!!!", ctx.user.email);
-    //   const user = ctx.users.find((user) => user.email == email);
-    let email = data.email;
-    if (ctx.user.email !== email) {
-      //   if (!user) {
-      props.setStatus("fail!");
-
+    console.log("data inside display", data.email);
+    console.log("props inside display", props.authEmail);
+    if (props.authEmail !== data.email) {
+      console.log("T/F", props.authEmail === data.email);
+      props.setStatus("Incorrect email!");
       return;
+    } else {
+      // props.setStatus("please enter correct email");
+      props.setStatus(`Your balance is: $ ${props.balance}`);
     }
-    //   }
-
-    // props.setStatus("please enter correct email")
-    props.setStatus(`Your balance is: $ ${ctx.userBalance}`);
-
     props.setShow(false);
   }
 

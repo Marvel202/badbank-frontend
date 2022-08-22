@@ -1,23 +1,24 @@
 import { Link } from "react-router-dom";
-import React from "react";
+import React, { useState } from "react";
 import { getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../firebaseapp/auth";
-import { useSession } from "../firebaseapp/UserProvider";
+import { useSession } from "../firebaseapp/AuthProvider";
 
 export const NavBar = () => {
-  const auth = getAuth();
-  const user = useSession().user;
-  console.log("load Navbar", user);
-  const disable = user ? "nav-link disabled" : "nav-link";
-  const removeDisable = user ? "nav-link" : "nav-link disabled";
-  const navigate = useNavigate();
+  const { session, _ } = useSession();
+  console.log("load Navbar", session);
+  const loading = session.loading;
+  const email = session.email;
+  console.log("testing", loading);
+  console.log("email in NavBar", email);
 
+  const auth = getAuth();
+  const navigate = useNavigate();
   const handle = () => {
     logout();
-    navigate("/*");
+    navigate("/");
   };
-
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -42,45 +43,47 @@ export const NavBar = () => {
                 Home
               </Link>
             </li>
-            <li className="nav-item">
-              <Link className={disable} to="/createaccount">
-                Sign Up / Sign In
-              </Link>
-            </li>
 
-            <li className="nav-item">
-              <Link className={removeDisable} to="/deposit">
-                Deposit
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className={removeDisable} to="/withdraw">
-                Withdraw
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className={removeDisable} to="/balance">
-                Balance
-              </Link>
-            </li>
+            {loading ? (
+              <li className="nav-item">
+                <Link className="nav-link" to="/createaccount">
+                  Sign Up / Sign In
+                </Link>
+              </li>
+            ) : (
+              <>
+                <li className="nav-item logout">
+                  <Link className="nav-link" to="/" onClick={handle}>
+                    LOGOUT
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/deposit">
+                    Deposit
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/withdraw">
+                    Withdraw
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/balance">
+                    Balance
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
 
           <ul className="navbar-nav ms-auto p-2">
-            <li
-              className="nav-item"
-              style={{ color: "magenta", listStyle: "none" }}
-            >
-              {!!user && (
+            <li className="nav-item info active" style={{ listStyle: "none" }}>
+              {!loading && (
                 <div>
                   <span>Current User:</span>
-                  {user.displayName}
-
-                  <button
-                    className="secondary btn btn-default btn-sm logout"
-                    onClick={handle}
-                  >
-                    LOGOUT
-                  </button>
+                  {session.user.displayName
+                    ? session.user.displayName.toUpperCase()
+                    : ""}
                 </div>
               )}
             </li>
