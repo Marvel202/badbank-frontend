@@ -2,7 +2,7 @@ import axios from "axios";
 import "dotenv/config";
 const token = localStorage.getItem("token");
 
-const baseURL = "https://bad-bank-backend.herokuapp.com/";
+const baseURL = process.env.REACT_APP_API_URL;
 
 export const service = axios.create({
   baseURL: baseURL,

@@ -80,42 +80,31 @@ function CreateForm(props) {
     );
   };
 
-  const onSubmit = async (data) => {
-    console.log("Data", data);
+  const onSubmit = async (info) => {
+    console.log("Data", info);
 
     let newUser;
-    // setLoading(true);
     try {
-      newUser = await createAccount(data);
+      newUser = await createAccount(info);
       console.log("new user", newUser);
       if (newUser) {
         console.log("newUser", newUser);
         console.log("then", props);
 
-        const url = "https://bad-bank-backend.herokuapp.com/account/create";
         let body = {
-          username: data.username,
-          email: data.email,
+          username: info.username,
+          email: info.email,
           firebaseId: "",
           balance: 0,
         };
-        var authOptions = {
-          method: "post",
-          url: url,
-          data: body,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          json: true,
-        };
-
-        axios(authOptions)
-          .then((resp) => {
-            console.log("response: ", resp);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        try {
+          const { data, status } = await ledgerAPI.accountCreate(body);
+          if (status === 200) {
+            console.log("bbb", data);
+          }
+        } catch (error) {
+          console.error("err", error);
+        }
 
         reset();
         props.setShow(false);

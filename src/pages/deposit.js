@@ -82,7 +82,8 @@ function DepositForm(props) {
       props.setBalance(newTotal);
       console.log("vvv", newTotal);
 
-      const url = `https://bad-bank-backend.herokuapp.com/account/update/${props.authEmail}`;
+      const url =
+        process.env.REACT_APP_API_URL + `account/update/${props.authEmail}`;
       console.log("url in deposit", url);
       let body = {
         balance: newTotal,
