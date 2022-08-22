@@ -22,7 +22,6 @@ export const LedgerContextProvider = ({ children }) => {
             setBalance(data[0].balance);
           }
         } catch (error) {
-          // console.error("err", error);
           alert(error.message);
         }
         setLoading(false);

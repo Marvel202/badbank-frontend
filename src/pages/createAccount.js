@@ -11,7 +11,6 @@ import { ledgerAPI } from "../Ledger";
 export const CreateAccount = () => {
   const [show, setShow] = useState(true);
   const [status, setStatus] = useState("");
-
   const { balance, setBalance } = useContext(LedgerContext);
 
   return (
@@ -81,16 +80,11 @@ function CreateForm(props) {
   };
 
   const onSubmit = async (info) => {
-    console.log("Data", info);
-
     let newUser;
     try {
       newUser = await createAccount(info);
-      console.log("new user", newUser);
-      if (newUser) {
-        console.log("newUser", newUser);
-        console.log("then", props);
 
+      if (newUser) {
         let body = {
           username: info.username,
           email: info.email,
@@ -100,12 +94,11 @@ function CreateForm(props) {
         try {
           const { data, status } = await ledgerAPI.accountCreate(body);
           if (status === 200) {
-            console.log("bbb", data);
           }
         } catch (error) {
           console.error("err", error);
+          alert(error.message);
         }
-
         reset();
         props.setShow(false);
         setTimeout(() => {
