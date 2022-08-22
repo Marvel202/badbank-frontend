@@ -68,10 +68,7 @@ function BalanceForm(props) {
   } = useForm();
 
   function displayDetails(data) {
-    console.log("data inside display", data.email);
-    console.log("props inside display", props.authEmail);
     if (props.authEmail !== data.email) {
-      console.log("T/F", props.authEmail === data.email);
       props.setStatus("Incorrect email!");
       return;
     } else {

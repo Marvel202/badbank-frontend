@@ -86,10 +86,8 @@ function WithdrawForm(props) {
 
     let newTotal = Number(prevBalance) - Number(val);
     props.setBalance(newTotal);
-    console.log("xxx", newTotal);
 
     const url = `https://bad-bank-backend.herokuapp.com/account/update/${props.authEmail}`;
-    console.log("url from withdraw");
 
     let body = {
       balance: newTotal,
@@ -107,12 +105,8 @@ function WithdrawForm(props) {
     };
 
     axios(authOptions)
-      .then((resp) => {
-        console.log("response: ", resp);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      .then((resp) => {})
+      .catch((error) => {});
 
     props.setStatus("");
     props.setShow(false);

@@ -84,7 +84,6 @@ function DepositForm(props) {
 
       const url =
         process.env.REACT_APP_API_URL + `account/update/${props.authEmail}`;
-      console.log("url in deposit", url);
       let body = {
         balance: newTotal,
         $push: { deposits: [{ tran_date: Date.now(), amount: val }] },
@@ -101,12 +100,8 @@ function DepositForm(props) {
       };
 
       axios(authOptions)
-        .then((resp) => {
-          console.log("response: ", resp);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+        .then((resp) => {})
+        .catch((error) => {});
 
       props.setStatus("");
       props.setShow(false);
