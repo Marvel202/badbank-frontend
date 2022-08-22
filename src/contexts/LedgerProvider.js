@@ -8,7 +8,7 @@ export const LedgerContextProvider = ({ children }) => {
   const { session, _ } = useSession();
   const [isLoading, setLoading] = useState(true);
 
-  const [ledger, setLedger] = useState(0);
+  // const [ledger, setLedger] = useState(0);
   const [balance, setBalance] = useState(0);
 
   const authEmail = session.email;
@@ -24,7 +24,7 @@ export const LedgerContextProvider = ({ children }) => {
           const ledgerData = resp.data[0];
           console.log("per ledger", ledgerData);
           setBalance(resp.data[0].balance);
-          setLedger(resp.data[0]);
+          // setLedger(resp.data[0]);
         } catch (error) {
           console.error("err", error);
         }
@@ -35,7 +35,7 @@ export const LedgerContextProvider = ({ children }) => {
   }, [url]);
 
   return (
-    <LedgerContext.Provider value={{ balance, setBalance, setLedger }}>
+    <LedgerContext.Provider value={{ balance, setBalance }}>
       {children}
     </LedgerContext.Provider>
   );

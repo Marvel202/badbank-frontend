@@ -66,6 +66,7 @@ function DepositForm(props) {
     let email = getValues().email;
 
     console.log("inside submit", props);
+
     console.log("val", val);
     console.log("OnSubmit", props.balance);
 
@@ -84,7 +85,7 @@ function DepositForm(props) {
       const url = `http://localhost:3003/account/update/` + props.authEmail;
       let body = {
         balance: newTotal,
-        deposits: { tran_date: new Date().toLocaleString(), amount: val },
+        $push: { deposits: [{ tran_date: Date.now(), amount: val }] },
       };
 
       var authOptions = {

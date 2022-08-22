@@ -10,7 +10,7 @@ export const Withdraw = (session) => {
   const [status, setStatus] = useState("");
   console.log("from withdraw", session.user.session);
   const { loading, email, firebaseId, user } = session.user.session;
-  const { balance, setBalance } = useContext(LedgerContext);
+  const { balance, setBalance, ledger } = useContext(LedgerContext);
   const authEmail = email;
 
   return (
@@ -27,6 +27,7 @@ export const Withdraw = (session) => {
               balance={balance}
               setBalance={setBalance}
               authEmail={authEmail}
+              ledger={ledger}
             />
           ) : (
             <WithdrawMsg setShow={setShow} />
@@ -90,9 +91,13 @@ function WithdrawForm(props) {
     // const url =
     // `https://bad-bank-backend.herokuapp.com/account/update/` + params;
     const url = `http://localhost:3003/account/update/` + params;
+
+    // get previous transactions
+
+    // set current transaction
     let body = {
       balance: newTotal,
-      withdrawal: { tran_date: new Date().toLocaleString(), amount: val },
+      $push: { withdrawal: [{ tran_date: Date.now(), amount: val }] },
     };
 
     var authOptions = {
