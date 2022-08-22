@@ -9,10 +9,8 @@ import { Balance } from "../pages/balance";
 import * as Enroute from "../constants/routes";
 import { useSession } from "../firebaseapp/AuthProvider";
 import { NotAvail } from "../pages/NotAvail";
-import { getAuth } from "firebase/auth";
 
 export const AppRoute = () => {
-  const auth = getAuth();
   const session = useSession();
   return (
     <div className="layout">
