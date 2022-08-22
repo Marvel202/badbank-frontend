@@ -15,7 +15,6 @@ function App() {
           <NavBar />
           <div className="app">
             <div className="grid container"></div>
-
             <AppRoute />
           </div>
         </HashRouter>
